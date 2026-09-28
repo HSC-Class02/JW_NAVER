@@ -9,8 +9,8 @@ NAVER(035420)의 사업·반기·1/3분기 보고서를 월 1일 오전 9시(KST
 ## 설치와 배포
 
 1. [Open DART](https://opendart.fss.or.kr/)에서 본인의 API 인증키를 발급받습니다. 코드를 열어 키를 입력하거나 커밋하지 마세요.
-2. ZIP을 풀면 `JW_NAVER/.github/workflows/update-and-deploy.yml`이 바로 생성됩니다. 일부 파일 탐색기는 `.github` 폴더를 숨기므로 숨김 항목 표시를 켜서 확인하세요.
-3. `JW_NAVER` 폴더의 내용 전체를 `HSC-Class02/JW_NAVER` 저장소의 기본 브랜치에 업로드합니다. GitHub 웹 업로드에서 `.github` 폴더가 누락되면 `git add .github` 후 `git commit`/`git push`를 사용하세요.
+2. ZIP을 풀고 **압축 해제 폴더에서** `python install_workflow.py`를 한 번 실행합니다. GitHub Actions가 요구하는 `.github/workflows/update-and-deploy.yml`이 생성됩니다. ZIP에는 숨김 파일·폴더가 없습니다.
+3. 이 폴더의 내용 전체를 `HSC-Class02/JW_NAVER` 저장소의 기본 브랜치에 업로드합니다. GitHub 웹 업로드에서 숨김 폴더가 보이지 않으면 `git add .github` 후 `git commit`/`git push`를 쓰거나 GitHub 웹 UI에서 `.github/workflows/update-and-deploy.yml` 경로로 새 파일을 만드세요.
 4. 저장소 **Settings → Secrets and variables → Actions → New repository secret**에서 이름 `DART_API_KEY`, 값은 발급받은 40자리 키로 저장합니다.
 5. **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 설정합니다. Actions 탭에서 **Update DART data and deploy dashboard → Run workflow**를 1회 실행합니다. 이후 매월 1일 00:00 UTC(한국시간 09:00)에 실행됩니다. GitHub Actions 일정 실행은 부하에 따라 지연될 수 있습니다.
 6. 저장소 오른쪽 **About ⚙ → Website**에 `https://hsc-class02.github.io/JW_NAVER/`를 입력하고 저장합니다. 저장소 설정 권한이 필요한 작업입니다. 처음 실행이 성공하면 README 배지의 링크도 열립니다.
