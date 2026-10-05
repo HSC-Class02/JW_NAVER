@@ -28,8 +28,8 @@ class PipelineTests(unittest.TestCase):
         self.assertAlmostEqual(result[4]['metrics']['roa'],52/900)
         self.assertAlmostEqual(result[4]['quarter_metrics']['operating_margin'],.25)
     def test_api_interim_uses_ytd_not_three_month_and_exact_tags(self):
-        rows=[{'sj_div':'IS','account_id':'ifrs-full_Revenue','account_nm':'매출액','thstrm_amount':'30','thstrm_add_amount':'100'},
-              {'sj_div':'IS','account_id':'ifrs-full_OperatingIncomeLoss','account_nm':'영업이익','thstrm_amount':'5','thstrm_add_amount':'12'}]
+        rows=[{'sj_div':'CIS','account_id':'ifrs-full_Revenue','account_nm':'매출액','thstrm_amount':'30','thstrm_add_amount':'100'},
+              {'sj_div':'CIS','account_id':'ifrs-full_OperatingIncomeLoss','account_nm':'영업이익','thstrm_amount':'5','thstrm_add_amount':'12'}]
         result=extract({'filing':dict(business_year=2024,quarter=2,category='half-year',url='https://example.org'),
                         'basis':'CFS','rows':rows,'financial_receipt_no':'123'})
         self.assertEqual(result['revenue'],100)
