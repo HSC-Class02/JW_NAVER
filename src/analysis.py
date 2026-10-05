@@ -47,17 +47,32 @@ def ratio(n, d):
     return n / d if n is not None and d is not None and d > 0 else None
 
 def account(row):
-    return row.get('account_id', '').split(':')[-1].split('_')[-1], row.get('account_nm', '').replace(' ', '')
+    raw_id = row.get('account_id', '').strip()
+    tag = raw_id.split(':')[-1].split('_')[-1] if raw_id else ''
+    label = row.get('account_nm', '').replace(' ', '')
+    return tag, label
 
 def field(rows, spec, amount):
     statement, names = spec
-    candidates = [r for r in rows if r.get('sj_div') == statement and
+    statements = {'CIS': {'CIS', 'IS'}, 'IS': {'CIS', 'IS'}}.get(statement, {statement})
+    candidates = [r for r in rows if r.get('sj_div') in statements and
                   (r.get('account_detail') in ('', '-', None) or statement != 'SCE')]
     for name in names:
-        found = [r for r in candidates if name in account(r) and number(r.get(amount)) is not None]
-        # Exact match only, never substring match; avoid total + component double counting.
-        found = [r for r in found if name == account(r)[0] or name.replace(' ', '') == account(r)[1]]
-        if len(found) == 1: return number(found[0][amount])
+        normalized = name.replace(' ', '')
+        found = []
+        for row in candidates:
+            tag, label = account(row)
+            if number(row.get(amount)) is None:
+                continue
+            if name == tag or normalized == label:
+                found.append(row)
+        # A DART statement can contain similarly named component rows.
+        # Use the exact XBRL tag first; otherwise accept a unique exact Korean label.
+        tagged = [r for r in found if name == account(r)[0]]
+        if len(tagged) == 1:
+            return number(tagged[0][amount])
+        if len(found) == 1:
+            return number(found[0][amount])
     return None
 
 def extract(doc):
