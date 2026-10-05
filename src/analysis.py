@@ -6,13 +6,13 @@ from datetime import datetime
 ROOT = Path(__file__).resolve().parents[1]
 # Prefer XBRL tags; fall back to Korean labels only when unique within a statement.
 FIELDS = {
- 'revenue': ('IS', ['Revenue', 'RevenueFromContractWithCustomer', 'SalesRevenue', '영업수익', '매출액']),
- 'cost_of_sales': ('IS', ['CostOfSales', '매출원가']),
- 'gross_profit': ('IS', ['GrossProfit', '매출총이익']),
- 'operating_profit': ('IS', ['OperatingIncomeLoss', '영업이익', '영업이익(손실)']),
- 'pretax_profit': ('IS', ['ProfitLossBeforeTax', '법인세비용차감전순이익']),
- 'net_income': ('IS', ['ProfitLoss', '당기순이익', '당기순이익(손실)']),
- 'parent_income': ('IS', ['ProfitLossAttributableToOwnersOfParent', '지배기업의 소유주에게 귀속되는 당기순이익']),
+ 'revenue': ('CIS', ['Revenue', 'RevenueFromContractWithCustomer', 'SalesRevenue', '영업수익', '매출액']),
+ 'cost_of_sales': ('CIS', ['CostOfSales', '매출원가']),
+ 'gross_profit': ('CIS', ['GrossProfit', '매출총이익']),
+ 'operating_profit': ('CIS', ['OperatingIncomeLoss', '영업이익', '영업이익(손실)']),
+ 'pretax_profit': ('CIS', ['ProfitLossBeforeTax', '법인세비용차감전순이익']),
+ 'net_income': ('CIS', ['ProfitLoss', '당기순이익', '당기순이익(손실)']),
+ 'parent_income': ('CIS', ['ProfitLossAttributableToOwnersOfParent', '지배기업의 소유주에게 귀속되는 당기순이익']),
  'assets': ('BS', ['Assets', '자산총계']),
  'liabilities': ('BS', ['Liabilities', '부채총계']),
  'equity': ('BS', ['Equity', '자본총계']),
@@ -29,8 +29,8 @@ FIELDS = {
  'cff': ('CF', ['CashFlowsFromUsedInFinancingActivities', '재무활동현금흐름']),
  'capex_ppe': ('CF', ['PurchaseOfPropertyPlantAndEquipment', '유형자산의 취득']),
  'capex_intangible': ('CF', ['PurchaseOfIntangibleAssets', '무형자산의 취득']),
- 'interest_expense': ('IS', ['FinanceCosts', 'InterestExpense', '이자비용']),
- 'tax_expense': ('IS', ['IncomeTaxExpenseContinuingOperations', '법인세비용']),
+ 'interest_expense': ('CIS', ['FinanceCosts', 'InterestExpense', '이자비용']),
+ 'tax_expense': ('CIS', ['IncomeTaxExpenseContinuingOperations', '법인세비용']),
 }
 # Exact standard tags for debt; no aggregate debt estimate when borrowing items unavailable.
 DEBT_TAGS = ('ShorttermBorrowings', 'LongtermBorrowings', 'CurrentPortionOfLongtermBorrowings',
@@ -65,8 +65,8 @@ def extract(doc):
     current = {}
     for key, spec in FIELDS.items():
         amount = 'thstrm_amount'
-        if quarter != 4 and spec[0] in ('IS', 'CF'):
-            amount = 'thstrm_add_amount' if spec[0] == 'IS' and any(r.get('thstrm_add_amount') for r in rows if r.get('sj_div') == 'IS') else 'thstrm_amount'
+        if quarter != 4 and spec[0] in ('CIS', 'CF'):
+            amount = 'thstrm_add_amount' if spec[0] == 'CIS' and any(r.get('thstrm_add_amount') for r in rows if r.get('sj_div') == 'CIS') else 'thstrm_amount'
         current[key] = field(rows, spec, amount)
     if current['gross_profit'] is None and current['revenue'] is not None and current['cost_of_sales'] is not None:
         current['gross_profit'] = current['revenue'] - current['cost_of_sales']
